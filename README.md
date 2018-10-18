@@ -35,7 +35,7 @@ This statement sum the count field for each author from the art_log view and sho
 
 3rd QUESTION: 
 
-For the third question of the project I created three views. The first view is called wrong_reviews that is as follow: 
+For the third question of the project I created three views. The first view is called wrong_requests that is as follow: 
 
   CREATE VIEW wrong_requests as select time::date as date , COUNT(status) as error_requests from log where status != '200 OK' GROUP BY date, status;
 
