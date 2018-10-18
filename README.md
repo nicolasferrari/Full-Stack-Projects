@@ -39,17 +39,18 @@ For the third question of the project I created three views. The first view is c
 
   CREATE VIEW wrong_requests as select time::date as date , COUNT(status) as error_requests from log where status != '200 OK' GROUP BY date, status;
 
-  This view sum up the bad requests that happened in each day. The view has two fields that are date an error_requests that means the numbero of error request on each day. In this view I filter the statement for all the rows that have status distinct from 200 OK.
+  This view sum up the bad requests that happened in each day. The view has two fields that are date and error_requests that means the number of errors requests on each day. In this view I filter the statement for all the rows that have status distinct from '200 OK'.
 
-The second view that I created in the second question is called rigth_requests that consist in:
+The second view that I created in the third question is called rigth_requests that consist in:
 
   CREATE VIEW rigth_requests as select time::date as date, COUNT(status) as good_requests from log where status= '200 OK' GROUP BY date, status;
 
 This view has the same goal of the first view, but in this case, the final output are the total of correct requests from each day. I filter with the status equal to 200 OK to only work with the good requests in the log table. 
 
-The third view that I created is a combination of the first and second view: 
+The third view that I created is a combination of the first and second views: 
 
-  CREATE VIEW errors_good_requests as select rigth_requests.date, ROUND(cast(error_requests as decimal(7,2)) / cast(good_requests as      decimal(7,2)) ,4) as pct_errors from rigth_requests join wrong_requests on rigth_requests.date = wrong_requests.date;
+CREATE VIEW errors_good_requests as select rigth_requests.date, ROUND(cast(error_requests as decimal(7,2)) / cast(good_requests as      decimal(7,2)) ,4) as pct_errors from rigth_requests join wrong_requests on rigth_requests.date = wrong_requests.date;
+
 This view make the division between bad requests(error_requests field) and good requests(good_requests field) and call this field as pct_errors. To make this view, it was necessary to join the rigth_requests view with the wrong_requests view by the date field in order to have information for the same date in both tables. 
 
 The final statement is :  select * from errors_good_requests where pct_errors > 0.01; that filter the errors_good_requests view for the rows or days that have a ratio of bad/good requests greater than 1%.
