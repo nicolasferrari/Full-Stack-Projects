@@ -1,4 +1,27 @@
-# Full-Stack-Projects
+# This project try to answer three important questions about a database called news that provide information about users logs on a website that provide many articles from different authors. The database contains three tables that are log, articles and authors. The three questions that this project will answer are: 
+
+1- What are the most popular three articles of all time?
+2- What are the most popular article-authors of all time?
+3. On which days did more than 1% of requests lead to errors?
+
+Pre-requisites: 
+
+In order to run this project, some installation and configuration steps are needed. These requirements are pointed out in the following poins:
+
+First is needed to install python version 2 or 3 in this link: https://www.python.org/downloads/
+
+The next step is to configure a Virtual Machine using Virtual Box and Vagrant. This will create a linux instance that will be used to run the database queries. The link for download the Virtual Box is https://www.virtualbox.org/wiki/Downloads and to install Vagrant go to https://www.vagrantup.com/downloads.html. Once you have VirtualBox and Vagrant installed, open a terminal and run the following commands:
+
+mkdir networking
+cd networking
+vagrant init ubuntu/trusty64
+vagrant up
+
+When it is complete, you can log into the Linux instance with vagrant ssh.
+
+In order to get the database, the first step is to download the file with the link https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip. The database file must be inside the vagrant directory that is shared with the virtual machine.
+
+Once you put the database file inside the vagrant directory, you are able to run the statements in the Virtual Machine and get the results.  
 
 1st QUESTION: 
 
