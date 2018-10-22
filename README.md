@@ -1,4 +1,4 @@
-# This project try to answer three important questions about a database called news that provide information about users logs on a website that provide many articles from different authors. The database contains three tables that are log, articles and authors. The three questions that this project will answer are: 
+### This project try to answer three important questions about a database called news that provide information about users logs on a website that provide many articles from different authors. The database contains three tables that are log, articles and authors. The three questions that this project will answer are: 
 
 1- What are the most popular three articles of all time?
 2- What are the most popular article-authors of all time?
