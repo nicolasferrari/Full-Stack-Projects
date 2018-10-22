@@ -12,10 +12,10 @@ First is needed to install python version 2 or 3 in this link: https://www.pytho
 
 The next step is to configure a Virtual Machine using Virtual Box and Vagrant. This will create a linux instance that will be used to run python file with the database queries. The link for download the Virtual Box is https://www.virtualbox.org/wiki/Downloads and to install Vagrant go to https://www.vagrantup.com/downloads.html. Once you have VirtualBox and Vagrant installed, open a terminal and run the following commands:
 
-mkdir networking
-cd networking
-vagrant init ubuntu/trusty64
-vagrant up
+mkdir networking \n
+cd networking \n
+vagrant init ubuntu/trusty64 \n
+vagrant up \n
 
 When it is complete, you can log into the Linux instance with vagrant ssh.
 
