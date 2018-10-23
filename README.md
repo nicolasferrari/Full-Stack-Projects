@@ -4,7 +4,7 @@
 2- What are the most popular article-authors of all time?
 3. On which days did more than 1% of requests lead to errors?
 
-######Pre-requisites: 
+######Pre-requisites:###### 
 
 In order to run database queries to answer the questions, some installation and configuration steps are needed. These requirements are pointed out in the following rows:
 
