@@ -1,4 +1,4 @@
-### This project try to answer three important questions about a database called news that provide information about users logs on a website that contains articles from different authors. The news database contains three tables that are log which store user log information in the website, articles that have information about articles such as title, slug,  and authors that contain the names of the authors. The three questions that this project will answer are: 
+### This project try to answer three important questions about a database called news that provide information about users logs on a website that contains articles from different authors. The news database is composed by three tables that are the log table which store user log information in the website, articles table that have information about articles such as title, slug,  and authors table that contain the names of the authors. The three questions that this project will answer are: 
 
 1- What are the most popular three articles of all time?
 2- What are the most popular article-authors of all time?
@@ -6,7 +6,7 @@
 
 Pre-requisites: 
 
-In order to run this project, some installation and configuration steps are needed. These requirements are pointed out in the following poins:
+In order to run database queries to answer the questions, some installation and configuration steps are needed. These requirements are pointed out in the following rows:
 
 First is needed to install python version 2 or 3 in this link: https://www.python.org/downloads/
 
@@ -37,13 +37,21 @@ The first question of the project is answered with a a select statement that loo
 
 For the second question I created two views. The first was denominated article_log and consist in : 
 
-CREATE VIEW art_log as select count(split_part(path, '/',3)), split_part(path,'/',3) as articles from log GROUP BY articles HAVING COUNT(split_part(path, '/',3)) > 1000;
+CREATE VIEW art_log as select count(split_part(path, '/',3)), 
+    split_part(path,'/',3) as articles 
+    from log 
+    GROUP BY articles 
+    HAVING COUNT(split_part(path, '/',3)) > 1000;
  
 This view show 2 fields. The first field count the numbers of each path in the log table, and the second field show the name of the article(using split_part I remove the /articles/ part of the path field). Then the statement group by the "articles" temporary field and lastly use the HAVING command to filter the path that repeat more than 1000 times. The aim of the HAVING command is to remove bad or misspelled path fields in the log table.
 
 The second view that I created to answer this question is the following:
 
-CREATE VIEW art_author as select title, name, slug from articles join authors on articles.author = authors.id 
+CREATE VIEW art_author as select title, name, slug 
+    from articles 
+    join authors 
+    on articles.author = authors.id;
+    
 This view is a join between the authors table and the articles table. The aim of this view is to join information between the two tables and to bring the slug field that has the same string pattern than the path field of the log table.
 
 
@@ -56,25 +64,33 @@ This statement sum the count field for each author from the art_log view and sho
 
 3rd QUESTION: 
 
-For the third question of the project I created three views. The first view is called wrong_requests that is as follow: 
+For the third question of the project I created three views. The first view is called incorrect_requests that is as follow: 
 
-  CREATE VIEW wrong_requests as select time::date as date , COUNT(status) as error_requests from log where status != '200 OK' GROUP BY date, status;
+CREATE VIEW incorrect_requests as SELECT log."time"::date AS "time",
+    count(log.status) AS error_requests
+   FROM log
+  WHERE log.status <> '200 OK'::text
+  GROUP BY log."time"::date, log.status;
 
-  This view sum up the bad requests that happened in each day. The view has two fields that are date and error_requests that means the number of errors requests on each day. In this view I filter the statement for all the rows that have status distinct from '200 OK'.
+The second view that I created in the third question is called normal_requests that consist in:
 
-The second view that I created in the third question is called rigth_requests that consist in:
+CREATE VIEW normal_requests as SELECT log."time"::date AS "time",
+    count(log.status) AS good_requests
+   FROM log
+  WHERE log.status = '200 OK'::text
+  GROUP BY log."time"::date, log.status;
 
-  CREATE VIEW rigth_requests as select time::date as date, COUNT(status) as good_requests from log where status= '200 OK' GROUP BY date, status;
-
-This view has the same goal of the first view, but in this case, the final output are the total of correct requests from each day. I filter with the status equal to 200 OK to only work with the good requests in the log table. 
 
 The third view that I created is a combination of the first and second views: 
 
-CREATE VIEW errors_good_requests as select rigth_requests.date, ROUND(cast(error_requests as decimal(7,2)) / cast(good_requests as      decimal(7,2)) ,4) as pct_errors from rigth_requests join wrong_requests on rigth_requests.date = wrong_requests.date;
+CREATE VIEW final_table as SELECT normal_requests."time",
+    round(incorrect_requests.error_requests::numeric(7,2) / normal_requests.good_requests::numeric(7,2), 4) AS pct_errors
+   FROM normal_requests
+     JOIN incorrect_requests ON normal_requests."time" = incorrect_requests."time";
 
-This view make the division between bad requests(error_requests field) and good requests(good_requests field) and call this field as pct_errors. To make this view, it was necessary to join the rigth_requests view with the wrong_requests view by the date field in order to have information for the same date in both tables. 
 
-The final statement is :  select * from errors_good_requests where pct_errors > 0.01; that filter the errors_good_requests view for the rows or days that have a ratio of bad/good requests greater than 1%.
+The final statement is :  select * from errors_good_requests where pct_errors > 0.01;
+which filter the errors_good_requests view for the rows or days that have a ratio of bad/good requests greater than 1%.
 
 
 
