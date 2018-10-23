@@ -4,7 +4,7 @@
 2- What are the most popular article-authors of all time?
 3. On which days did more than 1% of requests lead to errors?
 
-#Pre-requisites: 
+Pre-requisites: 
 
 In order to run database queries to answer the questions, some installation and configuration steps are needed. These requirements are pointed out in the following rows:
 
@@ -26,7 +26,7 @@ In order to get the database, the first step is to download the file with the li
 
 Once you put the database file inside the vagrant directory, you are able to run the statements in the Virtual Machine and get the results.  
 
-##1st QUESTION: 
+1st QUESTION: 
 
 The first question of the project is answered with a a select statement that look in the log table for the articles that are the most visited by the users of the site. The query is as follow: 
 
@@ -36,7 +36,7 @@ The first question of the project is answered with a a select statement that loo
 
   The condition that this statement has is that split_part(path, '/', 3) must be <> '' as there are many empty string in the path field. Lastly I group by the statement on the path field and show the results in descending order meaning that the most viewed articles are first. 
 
-##2nd QUESTION: 
+2nd QUESTION: 
 
 For the second question I created two views. The first was denominated article_log and consist in : 
 
@@ -65,7 +65,7 @@ select sum(count) , name from art_author join art_log on art_author.slug = art_l
 This statement sum the count field for each author from the art_log view and show the name of the article from the art_author view. For this it was necessary to join the two views using the slug field from the art_author view and the articles(temporary field) from the art_log view.
 
 
-##3rd QUESTION: 
+3rd QUESTION: 
 
 For the third question of the project I created three views. The first view is called incorrect_requests that is as follow: 
 
