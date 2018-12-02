@@ -1,0 +1,39 @@
+﻿</head>
+<body>
+
+
+
+    {% for i in item %}
+
+    {{i.name}}
+
+    <h3>Origin</h3>   {{i.origin}}
+
+    </br>
+
+    <h3>Price</h3>    {{i.price}}
+
+    </br>
+
+    <h3>Colour</h3>   {{i.colour}}
+
+    </br>
+
+    <h3>Hardness</h3>  {{i.hardness}}
+
+    </br>
+
+    <h3>Description</h3> {{i.description}}
+
+    </br>
+    </br>
+
+    {% endfor %}
+    <a href='{{url_for('editItem',mineral_id=mineral_id, item_id = item_id)}}'>Edit</a>
+    <a href='{{url_for('deleteItem',mineral_id=mineral_id,item_id=item_id)}}'>Delete</a>
+    </br>
+    </br>
+    </br>
+
+</body>
+</html>

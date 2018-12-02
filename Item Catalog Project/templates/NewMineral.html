@@ -1,0 +1,19 @@
+﻿</head>
+<body>
+
+    <h1> Create New Mineral </h1>
+
+
+    <form action={{url_for('NewMineral',restaurant_id = i.id)}} method='post'>
+
+        <p>Name:</p>
+        <input type='text' size='30' name='name'>
+
+        <input type='submit' value='Edit'>
+
+        <a href="{{url_for('showMinerals')}}">  Cancel </a>
+    </form>
+
+
+</body>
+</html>
