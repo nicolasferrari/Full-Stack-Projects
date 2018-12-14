@@ -3,26 +3,29 @@
 <head>
 
     <h1 align="center">{{mineral.name}}</h1>
-    <a href='{{url_for('newItem',mineral_id=mineral.id)}}'>Create New Item</a>
+    <a href='{{url_for('newItem',mineral_id=mineral_id)}}'>Create New Item</a>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
 
     <ul>
         {% for message in messages %}
-        <li><strong>{{messages}} </strong> </li>
+        <li><strong>{{message}} </strong> </li>
         {% endfor %}
     </ul>
     {% endif %}
     {% endwith %}
-
+    <a href="{{url_for('showMinerals')}}"> <h6 align="center">Home Page</h6></a>
 
     <h3>Stone Name</h3>
 
     {% for i in items %}
 
-    <a href ="{{url_for('showItemInformation',mineral_id=mineral_id,item_id=i.id)}}"> {{i.name}} </a>
-   
+    <a href="{{url_for('showItemInformation',mineral_id=mineral_id,item_id=i.id)}}"> {{i.name}} </a>
+
+
+
+
     <br />
     <br />
 

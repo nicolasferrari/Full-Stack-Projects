@@ -2,13 +2,8 @@
 <body>
 
     <h1> New Item </h1>
-
-    <link rel=stylesheet type=text/css href="{{url_for('static',filename='styles.css')}}">
     </head>
     <body>
-        <div class='pane'>
-            <div class="header">
-                <div class='header'>
 
 
                     <form action="{{url_for('newItem',mineral_id = mineral_id)}}" method='post'>
@@ -25,6 +20,9 @@
                         <input type='text' size='30' name='hardness'>
                         <p>Description:</p>
                         <input type='text' size='30' name='description'>
+
+                        </br>
+                        </br>
 
                         <input type='submit' value='Create'>
 
