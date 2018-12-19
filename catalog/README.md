@@ -10,9 +10,9 @@ Specifically with this project users can read, create, edit and delete minerals 
 
 ### Dependencies
 
-Vagrant
-Udacity Vagrant File
-Virtual Box
+[Vagrant](https://www.vagrantup.com/)
+[Udacity Vagrant File](https://github.com/udacity/fullstack-nanodegree-vm)
+[Virtual Box](https://www.virtualbox.org/wiki/Downloads)
 
 ### How to install
 
