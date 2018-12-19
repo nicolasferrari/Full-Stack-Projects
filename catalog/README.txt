@@ -1,6 +1,6 @@
 Place your catalog project in this directory.
 
-### ITEM CATALOG ###
+### ITEM CATALOG 
 This web app is a project for the Udacity FSND Course.
 
 ### ABOUT
