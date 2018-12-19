@@ -59,9 +59,9 @@ To get the Google login working there are a few additional steps:
 
 6-Enter name 'Minerals-App'
 
-7-Authorized JavaScript origins = 'http://localhost:5010'
+7-Authorized JavaScript origins = 'http://localhost:8000'
 
-8-Authorized redirect URIs = 'http://localhost:5010/login' && 'http://localhost:5010/gconnect'
+8-Authorized redirect URIs = 'http://localhost:8000/login' && 'http://localhost:8000/gconnect'
 
 9-Select Create
 
