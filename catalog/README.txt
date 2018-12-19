@@ -1,20 +1,20 @@
 Place your catalog project in this directory.
 
-##ITEM CATALOG
+### ITEM CATALOG
 This web app is a project for the Udacity FSND Course.
 
-##ABOUT
+### ABOUT
 
 This project is focus on manage the CRUD operations using a database backend based in SQLAlchemy and the Flask framework to build a Restful architecture that provide the differents functionalities of the App. 
 Specifically with this project users can read, create, edit and delete minerals and items within minerals. I have done a research on Wikipedia and other sites to gather some informationn about minerals and it correspondents stones(items) and create a minerals list as well as stones that belong to each mineral groups.
 
-## Dependencies
+### Dependencies
 
 Vagrant
 Udacity Vagrant File
 Virtual Box
 
-## How to install
+### How to install
 
 1-Install Vagrant & VirtualBox
 2-Clone the Udacity Vagrantfile
@@ -29,7 +29,7 @@ Virtual Box
 10-Run application using python application.py
 11-Access the application locally using http://localhost:8000
 
-## Authentication with Google log in 
+### Authentication with Google log in 
 To get the Google login working there are a few additional steps:
 
 1-Go to Google Dev Console
