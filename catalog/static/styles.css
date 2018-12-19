@@ -38,7 +38,7 @@ a {
 
 .pane {
     position: absolute;
-    left: 75%;
+    left: 25%;
     border: 2px solid;
     border-radius: 25px;
     padding: 5px;

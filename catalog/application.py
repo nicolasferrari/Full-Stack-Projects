@@ -86,7 +86,7 @@ def gconnect():
             'Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials
+    login_session['access_token'] = credentials.access_token
     print(credentials.access_token)
     login_session['gplus_id'] = gplus_id
 
@@ -96,7 +96,7 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
     #print(answer)
     data = answer.json()
-    #print(data) # json.loads(answer.text)
+    print(data.keys()) #
     login_session['username'] = data["name"]
     login_session['picture'] = data["picture"]
     login_session['email'] = data["email"]
@@ -113,6 +113,7 @@ def gconnect():
     flash("you are now logged in as %s" % login_session["username"])
     print("done!")
     return output
+
 
 #DISCONNECT - Revoke a current user's token and reset their login_session.
 
@@ -152,25 +153,19 @@ def gdisconnect():
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in range(32))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-
+# Shows the different types of minerals 
+@app.route('/')
 @app.route('/minerals/')
 def showMinerals():
     minerals = session.query(Mineral).all()
     return render_template('minerals.html', minerals=minerals)
 
 
-@app.route('/minerals/<int:mineral_id>')
-def mineral_items(mineral_id):
-    mineral = session.query(Mineral).filter_by(id=mineral_id)
-    items = session.query(Item).filter_by(id=mineral_id)
-    return render_template('minerals.html', mineral_id=mineral, items=items)
-
-
+#Create a new mineral. For this step is necessary to authenticate first 
 @app.route('/minerals/new/', methods=['GET', 'POST'])
 def newMineral():
     if 'username' not in login_session:
@@ -184,45 +179,47 @@ def newMineral():
     else:
         return render_template('NewMineral.html')
 
-#@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET','POST'])
-#def editMineral(mineral_id):
-#    edit_mineral = session.query(Mineral).filter_by(id= mineral_id).one()
-#    if request.method == 'POST':
-#        if request.form['name']:
-#            edit_mineral.name = request.form['name']
-#        session.add(edit_mineral)
-#        session.commit()
-#        flash('Mineral edited successfully')
-#        return redirect(url_for('showminerals'))
-#    else:
-#        return render_template('editmineral.html', mineral_id=mineral_id, i= edit_mineral)
+# Edit a Mineral name. This route can be used in order to correct misspelled names of minerals or update names.
+@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET','POST'])
+def editMineral(mineral_id):
+    edit_mineral = session.query(Mineral).filter_by(id= mineral_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            edit_mineral.name = request.form['name']
+        session.add(edit_mineral)
+        session.commit()
+        flash('Mineral edited successfully')
+        return redirect(url_for('showItems',mineral_id=mineral_id))
+    else:
+        return render_template('editmineral.html', mineral_id=mineral_id, i= edit_mineral)
 
-#@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET','POST'])
-#def deleteMineral(mineral_id):
-#    delete_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
-#    if request.method== 'POST':
-##        session.delete(delete_mineral)
-#        session.commit()
-#        flash('Mineral successfully deleted')
-#        return redirect(url_for('showMinerals'))
-#    else:
-#        return render_template('DeleteMineral.html', mineral_id = mineral_id, i = delete_mineral)
+# Delete a Mineral. This route can be used to delete a Mineral that has incorrect name, or a mineral that was added before. 
+@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET','POST'])
+def deleteMineral(mineral_id):
+    delete_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
+    if request.method== 'POST':
+        session.delete(delete_mineral)
+        session.commit()
+        flash('Mineral successfully deleted')
+        return redirect(url_for('showMinerals'))
+    else:
+        return render_template('DeleteMineral.html', mineral_id = mineral_id, i = delete_mineral)
 
-
+# Show information of the differents items that belong to a group of mineral 
 @app.route('/minerals/<int:mineral_id>/items/')
 def showItems(mineral_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     items = session.query(Item).filter_by(mineral_id=mineral_id)
     return render_template('items.html', mineral_id=mineral_id, mineral=mineral, items=items)
 
-
+# Show item information such as price, origin, colour, description
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/')
 def showItemInformation(mineral_id, item_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     item = session.query(Item).filter_by(id=item_id)
-    return render_template('itemInfo.html', mineral_id=mineral_id, item_id=item_id, item=item)
+    return render_template('itemInfo.html',mineral=mineral, mineral_id=mineral_id, item_id=item_id, item=item)
 
-
+# Create a new item within a category. Firt authenticate in order to proceed with the new item generation
 @app.route('/minerals/<int:mineral_id>/items/new/', methods=['GET', 'POST'])
 def newItem(mineral_id):
     if 'username' not in login_session:
@@ -236,7 +233,7 @@ def newItem(mineral_id):
     else:
         return render_template('newItem.html', mineral_id=mineral_id)
 
-
+# Edit information of the item. The user must be authenticate in the web app in order to proceed with the change of item properties.
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(mineral_id, item_id):
     if 'username' not in login_session:
@@ -279,7 +276,7 @@ def editItem(mineral_id, item_id):
     else:
         return render_template('editItem.html', mineral_id=mineral_id, item_id=item_id, item=edit_item)
 
-
+# Delete a specific item. The user must be authenticate in the web app in order to remove items within a category. 
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(mineral_id, item_id):
     if 'username' not in login_session:
@@ -294,12 +291,13 @@ def deleteItem(mineral_id, item_id):
         return render_template('deleteItem.html', mineral_id=mineral_id,  i=item_to_delete)
 
 
+# Return serialized information of the list of minerals in the web app
 @app.route('/minerals/JSON')
 def minerals_to_json():
     minerals = session.query(Mineral).all()
     return jsonify(minerals=[i.serialize for i in minerals])
 
-
+# Return serialized information of properties of the items within a specific group of minerals defined in /minerals route.
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/JSON')
 def menuitem(mineral_id, item_id):
     minerals = session.query(Mineral).filter_by(id=mineral_id).one()

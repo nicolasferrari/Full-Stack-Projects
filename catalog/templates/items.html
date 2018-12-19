@@ -4,6 +4,14 @@
 
     <h1 align="center">{{mineral.name}}</h1>
     <a href='{{url_for('newItem',mineral_id=mineral_id)}}'>Create New Item</a>
+    <br />
+    <br />
+    <a href='{{url_for('editMineral',mineral_id=mineral_id)}}'>Edit Mineral Name</a>
+    <br />
+    <br />
+    <a href='{{url_for('deleteMineral',mineral_id=mineral_id)}}'>Delete Mineral</a>
+    <br />
+    <br />
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -15,7 +23,7 @@
     </ul>
     {% endif %}
     {% endwith %}
-    <a href="{{url_for('showMinerals')}}"> <h6 align="center">Home Page</h6></a>
+    <a href="{{url_for('showMinerals')}}"> <h4 align="center">Home Page</h4></a>
 
     <h3>Stone Name</h3>
 
