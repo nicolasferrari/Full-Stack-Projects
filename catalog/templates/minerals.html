@@ -1,34 +1,35 @@
 ﻿<html>
 <head>
-            <body>
-
-                <ul>
-                    {% for message in messages %}
-                    <li><strong>{{ message }} </strong> </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
-                <h1> Minerals </h1>
-
-
-                <form action='{{url_for('showMinerals')}}'>
-
-                    <a href='{{url_for('newMineral')}}'>New Mineral</a>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-
-                    {% for i in minerals %}
-                    <div>
-                        <a href='{{url_for('showItems',mineral_id = i.id)}}'>{{i.name}}</a>
-                        </br>
-                        </br>
+    <body>
+        {% with messages= get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li><strong>{{ message }} </strong> </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <h1> Minerals </h1>
 
 
-                        {% endfor %}
+        <form action='{{url_for('showMinerals')}}'>
 
-            </body>
-            </form>
+            <a href='{{url_for('newMineral')}}'>New Mineral</a>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+
+            {% for i in minerals %}
+            <div>
+                <a href='{{url_for('showItems',mineral_id = i.id)}}'>{{i.name}}</a>
+                </br>
+                </br>
+
+
+                {% endfor %}
+        </form>
+    </body>
+            
