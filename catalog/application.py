@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import string
 import random
 import json
@@ -17,7 +16,8 @@ Created on Mon Nov 26 16:33:42 2018
 @author: Nicolas
 """
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect,
+url_for, flash, jsonify
 
 app = Flask(__name__)
 
@@ -25,7 +25,8 @@ app = Flask(__name__)
 # Declare my client_id
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
     'web']['client_id']
-engine = create_engine('sqlite:///mineralsitemsusers.db?check_same_thread=False')
+engine = create_engine('sqlite:///mineralsitemsusers.db?'
+                       'check_same_thread=False')
 
 
 Base.metadata.bind = engine
@@ -89,7 +90,7 @@ def gconnect():
     login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
-    #Get user info
+    # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -112,7 +113,8 @@ def gconnect():
 
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;"\
+              "-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 
     flash("you are now logged in as %s" % login_session["username"])
     print("done!")
@@ -134,7 +136,7 @@ def logout():
         return response
 
 
-#DISCONNECT - Revoke a current user's token and reset their login_session.
+# DISCONNECT - Revoke a current user's token and reset their login_session.
 
 
 @app.route("/gdisconnect")
@@ -153,7 +155,7 @@ def gdisconnect():
     result = h.request(url, 'GET')[0]
 
     if result['status'] == '200':
-        #Reset the user's session.
+        # Reset the user's session.
         del login_session['credentials']
         del login_session['gplus_id']
         del login_session['username']
@@ -164,7 +166,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        #For whatever reason, the given token was Invalid
+        # For whatever reason, the given token was Invalid
         response = make_response(json.dumps(
             'Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
@@ -206,11 +208,12 @@ def newMineral():
     else:
         return render_template('NewMineral.html')
 
-@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET','POST'])
+
+@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET', 'POST'])
 def editMineral(mineral_id):
     if 'username' not in login_session:
         return redirect('/login')
-    edit_mineral = session.query(Mineral).filter_by(id= mineral_id).one()
+    edit_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     if request.method == 'POST':
         if request.form['name']:
             edit_mineral.name = request.form['name']
@@ -219,34 +222,39 @@ def editMineral(mineral_id):
         flash('Mineral edited successfully')
         return redirect(url_for('showminerals'))
     else:
-        return render_template('editmineral.html', mineral_id=mineral_id, i= edit_mineral)
+        return render_template('editmineral.html', mineral_id=mineral_id,
+                               i=edit_mineral)
 
-@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET','POST'])
+
+@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET', 'POST'])
 def deleteMineral(mineral_id):
     if 'username' not in login_session:
         return redirect('/login')
     delete_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
-    if request.method== 'POST':
+    if request.method == 'POST':
         session.delete(delete_mineral)
         session.commit()
         flash('Mineral successfully deleted')
         return redirect(url_for('showMinerals'))
     else:
-        return render_template('DeleteMineral.html', mineral_id = mineral_id, i = delete_mineral)
+        return render_template('DeleteMineral.html', mineral_id=mineral_id,
+                               i=delete_mineral)
 
 
 @app.route('/minerals/<int:mineral_id>/items/')
 def showItems(mineral_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     items = session.query(Item).filter_by(mineral_id=mineral_id)
-    return render_template('items.html', mineral_id=mineral_id, mineral=mineral, items=items)
+    return render_template('items.html', mineral_id=mineral_id,
+                           mineral=mineral, items=items)
 
 
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/')
 def showItemInformation(mineral_id, item_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     item = session.query(Item).filter_by(id=item_id)
-    return render_template('itemInfo.html', mineral=mineral,mineral_id=mineral_id, item_id=item_id, item=item)
+    return render_template('itemInfo.html', mineral=mineral,
+                           mineral_id=mineral_id, item_id=item_id, item=item)
 
 
 @app.route('/minerals/<int:mineral_id>/items/new/', methods=['GET', 'POST'])
@@ -256,7 +264,7 @@ def newItem(mineral_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     if request.method == 'POST':
         new_item = Item(name=request.form['name'],
-                        origin=request.form['origin'], 
+                        origin=request.form['origin'],
                         colour=request.form['colour'],
                         price=request.form['price'],
                         hardness=request.form['hardness'],
@@ -270,7 +278,8 @@ def newItem(mineral_id):
         return render_template('newItem.html', mineral_id=mineral_id)
 
 
-@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/edit/',
+           methods=['GET', 'POST'])
 def editItem(mineral_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -313,12 +322,15 @@ def editItem(mineral_id, item_id):
         session.commit()
 
         flash('Item successfully edited')
-        return redirect(url_for('showItems', mineral_id=mineral_id, item_id=item_id))
+        return redirect(url_for('showItems', mineral_id=mineral_id,
+                                item_id=item_id))
     else:
-        return render_template('editItem.html', mineral_id=mineral_id, item_id=item_id, item=edit_item)
+        return render_template('editItem.html', mineral_id=mineral_id,
+                               item_id=item_id, item=edit_item)
 
 
-@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/delete/',
+           methods=['GET', 'POST'])
 def deleteItem(mineral_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -334,7 +346,8 @@ def deleteItem(mineral_id, item_id):
         flash('Item Successfully deleted')
         return redirect(url_for('showItems', mineral_id=mineral_id))
     else:
-        return render_template('deleteItem.html', mineral_id=mineral_id,  i=item_to_delete)
+        return render_template('deleteItem.html',
+                               mineral_id=mineral_id,  i=item_to_delete)
 
 
 @app.route('/minerals/JSON')
@@ -348,6 +361,7 @@ def menuitem(mineral_id, item_id):
     minerals = session.query(Mineral).filter_by(id=mineral_id).one()
     item = session.query(Item).filter_by(mineral_id=mineral_id, id=item_id)
     return jsonify(item=[i.serialize for i in item])
+
 
 def getUserID(email):
     try:
@@ -368,8 +382,8 @@ def createUser(login_session):
                    picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    print(login_session['email'])
-    user = session.query(User).filter_by(email=login_session['email']).limit(1).one()
+    email = login_session['email']
+    user = session.query(User).filter_by(email=email).limit(1).one()
     return user.id
 
 
