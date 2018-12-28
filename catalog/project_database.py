@@ -16,11 +16,12 @@ Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = 'User'
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-    email = Column(String(250),nullable=False)
+    email = Column(String(250), nullable=False)
     picture = Column(String(250))
-    id = Integer(Integer, primary_key=True)
 
 class Mineral(Base):
     __tablename__ = 'stones'
@@ -29,7 +30,7 @@ class Mineral(Base):
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-
+    
     @property
     def serialize(self):
         #Return object data in easily serializeable format
@@ -54,7 +55,7 @@ class Item(Base):
     stones = relationship(Mineral)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-
+    
 
     
     @property
@@ -71,7 +72,7 @@ class Item(Base):
                 'mineral_id': self.mineral_id}
 
 
-engine = create_engine('sqlite:///mineralsitems.db')
+engine = create_engine('sqlite:///mineralsitemsusers.db')
 
 
 Base.metadata.create_all(engine)

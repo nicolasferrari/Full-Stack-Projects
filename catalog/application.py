@@ -17,25 +17,23 @@ Created on Mon Nov 26 16:33:42 2018
 @author: Nicolas
 """
 
-from flask import Flask, render_template, request, redirect,
-url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 app = Flask(__name__)
 
 
-""" Declare my client_id"""
-
+# Declare my client_id
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
     'web']['client_id']
-engine = create_engine('sqlite:///mineralsitems.db?check_same_thread=False')
+engine = create_engine('sqlite:///mineralsitemsusers.db?check_same_thread=False')
 
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-"""Create a state token to prevent request forgery
-   Store it in the session for later validation"""
+# Create a state token to prevent request forgery
+# Store it in the session for later validation
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -58,8 +56,8 @@ def gconnect():
         return response
     # Check that the access token is valid.
     access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-           % access_token)
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' %
+           access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
     # If there was an error in the access token info, abort.
@@ -80,7 +78,6 @@ def gconnect():
         print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
-
     # Check to see if user is already logged in
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
@@ -90,10 +87,9 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
-    print(credentials.access_token)
     login_session['gplus_id'] = gplus_id
 
-    # Get user info
+    #Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -104,6 +100,7 @@ def gconnect():
 
     # see if user exists, if it don't make a new one
     user_id = getUserID(login_session['email'])
+    print(user_id)
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
@@ -115,14 +112,13 @@ def gconnect():
 
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height300px;border-radius: 150px;' \
-        '-webkit-border-radius:150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 
     flash("you are now logged in as %s" % login_session["username"])
     print("done!")
     return output
 
-"""logout user"""
+    """logout user"""
 
 
 @app.route('/logout', methods=['POST'])
@@ -137,8 +133,8 @@ def logout():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-""" DISCONNECT - Revoke a current user's token and reset their login_session.
-   """
+
+#DISCONNECT - Revoke a current user's token and reset their login_session.
 
 
 @app.route("/gdisconnect")
@@ -157,7 +153,7 @@ def gdisconnect():
     result = h.request(url, 'GET')[0]
 
     if result['status'] == '200':
-        # Reset the user's session.
+        #Reset the user's session.
         del login_session['credentials']
         del login_session['gplus_id']
         del login_session['username']
@@ -168,9 +164,9 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        # For whatever reason, the given token was Invalid
-        response = make_response(json.dumps('Failed to revoke '
-                                 'token for given user.'), 400)
+        #For whatever reason, the given token was Invalid
+        response = make_response(json.dumps(
+            'Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -178,21 +174,22 @@ def gdisconnect():
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+                    for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-""" Shows the different types of minerals """
 
-
-@app.route('/')
 @app.route('/minerals/')
 def showMinerals():
     minerals = session.query(Mineral).all()
     return render_template('minerals.html', minerals=minerals)
 
 
-""" Create a new mineral. For this step is necessary to authenticate first """"
+@app.route('/minerals/<int:mineral_id>')
+def mineral_items(mineral_id):
+    mineral = session.query(Mineral).filter_by(id=mineral_id)
+    items = session.query(Item).filter_by(id=mineral_id)
+    return render_template('minerals.html', mineral_id=mineral, items=items)
 
 
 @app.route('/minerals/new/', methods=['GET', 'POST'])
@@ -209,81 +206,62 @@ def newMineral():
     else:
         return render_template('NewMineral.html')
 
-""" Edit a Mineral name. This route can be used in order to correct misspelled
- names of minerals or update names."""
-
-
-@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/edit/', methods=['GET','POST'])
 def editMineral(mineral_id):
     if 'username' not in login_session:
         return redirect('/login')
-    edit_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
+    edit_mineral = session.query(Mineral).filter_by(id= mineral_id).one()
     if request.method == 'POST':
         if request.form['name']:
             edit_mineral.name = request.form['name']
         session.add(edit_mineral)
         session.commit()
         flash('Mineral edited successfully')
-        return redirect(url_for('showItems', mineral_id=mineral_id))
+        return redirect(url_for('showminerals'))
     else:
-        return render_template('editmineral.html', mineral_id=mineral_id,
-                               i=edit_mineral)
+        return render_template('editmineral.html', mineral_id=mineral_id, i= edit_mineral)
 
-""" Delete a Mineral. This route can be used to delete a
- Mineral that has incorrect name, or a mineral that was added before."""
-
-
-@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/delete/', methods=['GET','POST'])
 def deleteMineral(mineral_id):
     if 'username' not in login_session:
         return redirect('/login')
     delete_mineral = session.query(Mineral).filter_by(id=mineral_id).one()
-    if request.method == 'POST':
+    if request.method== 'POST':
         session.delete(delete_mineral)
         session.commit()
         flash('Mineral successfully deleted')
         return redirect(url_for('showMinerals'))
     else:
-        return render_template('DeleteMineral.html',
-                               mineral_id=mineral_id, i=delete_mineral)
-
-""" Show information of the differents items that belong to a group
-    of mineral"""
+        return render_template('DeleteMineral.html', mineral_id = mineral_id, i = delete_mineral)
 
 
 @app.route('/minerals/<int:mineral_id>/items/')
 def showItems(mineral_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     items = session.query(Item).filter_by(mineral_id=mineral_id)
-    return render_template('items.html', mineral_id=mineral_id,
-                           mineral=mineral, items=items)
-
-""" Show item information such as price, origin, colour, description"""
+    return render_template('items.html', mineral_id=mineral_id, mineral=mineral, items=items)
 
 
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/')
 def showItemInformation(mineral_id, item_id):
     mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     item = session.query(Item).filter_by(id=item_id)
-    return render_template('itemInfo.html', mineral=mineral,
-                           mineral_id=mineral_id, item_id=item_id, item=item)
-
-""" Create a new item within a category. Firt authenticate in order to
- proceed with the new item generation"""
+    return render_template('itemInfo.html', mineral=mineral,mineral_id=mineral_id, item_id=item_id, item=item)
 
 
 @app.route('/minerals/<int:mineral_id>/items/new/', methods=['GET', 'POST'])
 def newItem(mineral_id):
     if 'username' not in login_session:
         return redirect('/login')
+    mineral = session.query(Mineral).filter_by(id=mineral_id).one()
     if request.method == 'POST':
         new_item = Item(name=request.form['name'],
-                        origin=request.form['origin'],
+                        origin=request.form['origin'], 
                         colour=request.form['colour'],
                         price=request.form['price'],
                         hardness=request.form['hardness'],
                         description=request.form['description'],
-                        mineral_id=mineral_id,
+                        mineral_id=mineral.id,
                         user_id=mineral.user_id)
         session.add(new_item)
         session.commit()
@@ -291,12 +269,8 @@ def newItem(mineral_id):
     else:
         return render_template('newItem.html', mineral_id=mineral_id)
 
-""" Edit information of the item. The user must be authenticate in the
- web app in order to proceed with the change of item properties."""
 
-
-@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/edit/',
-           methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(mineral_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -339,18 +313,12 @@ def editItem(mineral_id, item_id):
         session.commit()
 
         flash('Item successfully edited')
-        return redirect(url_for('showItems', mineral_id=mineral_id,
-                                item_id=item_id))
+        return redirect(url_for('showItems', mineral_id=mineral_id, item_id=item_id))
     else:
-        return render_template('editItem.html', mineral_id=mineral_id,
-                               item_id=item_id, item=edit_item)
-
-""" Delete a specific item. The user must be authenticate in the web app
- in order to remove items within a category."""
+        return render_template('editItem.html', mineral_id=mineral_id, item_id=item_id, item=edit_item)
 
 
-@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/delete/',
-           methods=['GET', 'POST'])
+@app.route('/minerals/<int:mineral_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(mineral_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -366,11 +334,7 @@ def deleteItem(mineral_id, item_id):
         flash('Item Successfully deleted')
         return redirect(url_for('showItems', mineral_id=mineral_id))
     else:
-        return render_template('deleteItem.html',
-                               mineral_id=mineral_id,  i=item_to_delete)
-
-
-""" Return serialized information of the list of minerals in the web app"""
+        return render_template('deleteItem.html', mineral_id=mineral_id,  i=item_to_delete)
 
 
 @app.route('/minerals/JSON')
@@ -378,16 +342,12 @@ def minerals_to_json():
     minerals = session.query(Mineral).all()
     return jsonify(minerals=[i.serialize for i in minerals])
 
-""" Return serialized information of properties of the items within a
- specific group of minerals defined in /minerals route."""
-
 
 @app.route('/minerals/<int:mineral_id>/items/<int:item_id>/JSON')
 def menuitem(mineral_id, item_id):
     minerals = session.query(Mineral).filter_by(id=mineral_id).one()
     item = session.query(Item).filter_by(mineral_id=mineral_id, id=item_id)
     return jsonify(item=[i.serialize for i in item])
-
 
 def getUserID(email):
     try:
@@ -408,10 +368,12 @@ def createUser(login_session):
                    picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one()
+    print(login_session['email'])
+    user = session.query(User).filter_by(email=login_session['email']).limit(1).one()
     return user.id
+
 
 if __name__ == '__main__':
     app.secret_key = 'supersecretkey'
-    app.debug = True
-    app.run(host='0.0.0.0', port=8000, threaded=False)
+    app.debug = False
+    app.run(host='0.0.0.0', port=8000)
