@@ -33,6 +33,15 @@
 
 
             {% endfor %}
-    </form>
+
+
+{% if user == None %}
+<li id='alignright'><a href="{{url_for('showLogin')}}">Login</a></li>
+{% else %}
+<li id='alignright'><a href="{{url_for('gdisconnect')}}">Logout</a></li>
+{%endif%}
+
+
+</form>
     </body>
 

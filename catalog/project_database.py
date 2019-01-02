@@ -5,12 +5,12 @@ Created on Mon Nov 26 11:37:40 2018
 @author: Nicolas
 """
 
-import os 
+import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine 
+from sqlalchemy import create_engine
 
 Base = declarative_base()
 
@@ -23,28 +23,27 @@ class User(Base):
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
 
+
 class Mineral(Base):
     __tablename__ = 'stones'
-    
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-    
+
     @property
     def serialize(self):
-        #Return object data in easily serializeable format
+        # Return object data in easily serializeable format
         return {
                 'id': self.id,
                 'name': self.name,
-        
                 }
-    
-    
+
+
 class Item(Base):
     __tablename__ = 'properties'
-    
-    name = Column(String(30),nullable=False)
+
+    name = Column(String(30), nullable=False)
     origin = Column(String(80))
     id = Column(Integer, primary_key=True)
     colour = Column(String(250))
@@ -55,20 +54,18 @@ class Item(Base):
     stones = relationship(Mineral)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-    
 
-    
     @property
     def serialize(self):
-        #Return object data in easily serializeable format
+        # Return object data in easily serializeable format
         return {
                 'name': self.name,
                 'origin': self.origin,
-                'colour':self.colour,
+                'colour': self.colour,
                 'id': self.id,
                 'price': self.price,
-                'hardness':self.hardness,
-                'description:':self.description,
+                'hardness': self.hardness,
+                'description': self.description,
                 'mineral_id': self.mineral_id}
 
 
