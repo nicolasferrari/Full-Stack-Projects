@@ -1,0 +1,46 @@
+
+  <link rel=stylesheet type=text/css href="{{url_for('static',filename='style.css')}}">
+  
+  <a href="{{url_for('get_investors')}}"> <h2 align="center">Home Page</h2></a>
+  
+  <table>
+        <caption>TP3 Main Indicators</caption>
+        <thead>
+          <tr>
+            <th scope="col">Indicator</th>
+            <th scope="col">{{date}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Balance</td>
+            <td>{{"${}".format((balance)|float)}}</td>
+          </tr>
+          <tr>
+            <td>Profits</td>
+            <td>{{"${}".format((profits)|float)}}</td>
+          </tr>
+          <tr>
+            <td>Deposits</td>
+            <td>{{"${}".format((deposits)|float)}}</td>
+          </tr>
+          <tr>
+            <td>Profit Factor</td>
+            <td>{{profit_factor}}</td>
+          </tr>
+          <tr>
+            <td>Total Pips</td>
+            <td>{{pips}}</td>
+          </tr>
+          <tr>
+            <td>Gains</td>
+            <td>{{abs_gain}}</td>
+          </tr>
+          <tr>
+            <td>Commissions</td>
+            <td>{{"${}".format((commissions)|float)}}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+

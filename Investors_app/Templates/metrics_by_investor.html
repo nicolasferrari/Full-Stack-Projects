@@ -1,0 +1,53 @@
+<html>
+<head>
+    <link rel=stylesheet type=text/css href="{{url_for('static',filename='style.css')}}">
+    <a href="{{url_for('get_investors')}}"> <h2 align="center">Home Page</h2></a>
+    </head>
+    <body>
+    <div class = 'pane'>
+        <div class = 'header'>
+        <h1 align="center">{{investor_id}}</h1>
+        <h2 align="middle"> My Trading Plus 3</h2>
+             
+        </div>
+<br/>
+<br/>
+
+<h4 style="display: inline; text-align:right;" >Date</h4> &emsp; &emsp; &emsp;&emsp; <h4 style="display: inline; color: #D3D3D3; text-align:right;">{{date}}</h4> 
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Total Deposits</h4> &emsp; &emsp; <h4 style="display: inline; color:#D3D3D3 ;text-align:right;">{{"${}".format((deposit)|float)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Total Balance</h4>  &emsp; &emsp; &ensp; <h4 style="display: inline; color:#D3D3D3 ;text-align:right;">{{"${}".format((balance)|float)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Total Profits</h4> &emsp; &emsp; &ensp; <h4 style="display: inline; color:#D3D3D3 ; text-align:right;">{{"${}".format((profits)|float)}}</h4>
+<br/>
+<br/>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Total Gain</h4>  &emsp; &emsp; &emsp; <h4 style="display: inline ; color:#D3D3D3 ;text-align: right">{{"{0:.0%}".format(gain)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">My Deposits</h4>  &emsp; &emsp; &ensp; <h4 style="display: inline ; color :#D3D3D3 ; text-align:right">{{"${:.2f}".format((my_deposits)|float)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">My Balance</h4> &emsp; &emsp; &ensp; <h4 style="display: inline ;  color :#D3D3D3 ; text-align:right">{{"${:.2f}".format((my_balance)|float)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">My Profits</h4> &emsp; &emsp; &ensp; <h4 style="display: inline ; color: #D3D3D3 ; text-align:right">{{"${:.2f}".format((my_profit)|float)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">My Gains</h4> &emsp; &emsp; &emsp; <h4 style="display: inline ; color: #D3D3D3 ; text-align:right">{{"{0:.0%}".format(my_gain)}}</h4>
+<br/>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Daily Calendar Gain </h4> &emsp; &emsp; &emsp; <h4 style="display: inline ; color :#D3D3D3 ; text-align:right">{{"{0:.2%}".format(daily_gain)}}</h4>
+<br/>
+<br/>
+<h4 style="display: inline; text-align:right;">Daily Trading Gain </h4> &emsp; &emsp; &emsp; <h4 style="display: inline ; color :#D3D3D3 ; text-align:right">{{"{0:.2%}".format(trading_daily_gain)}}</h4>
+
+</div>
+</body>
+</html>
